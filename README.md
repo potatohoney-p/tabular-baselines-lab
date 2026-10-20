@@ -42,3 +42,7 @@ The classifier stores one arithmetic centroid per label and resolves distance ti
 The implementation uses language features and standard-library APIs available in [Python 3.4](https://docs.python.org/3.4/library/index.html), released in [March 2014](https://www.python.org/downloads/release/python-340/). Use a supported runtime; an old interpreter is not required. Compatibility with a historical runtime is not certified by current-runtime tests.
 
 MIT licensed. No third-party source code or datasets are bundled.
+
+## Held-out classification evaluation
+
+`python evaluate.py examples/input.json` creates a deterministic stratified split, fits scaling and centroids on training rows only, and reports held-out accuracy, confusion counts, and partition indices. Every class must contain at least two rows. The small demo is illustrative; it is not a real-world accuracy claim.

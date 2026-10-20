@@ -14,7 +14,8 @@ def fit_scaler(rows):
     return means,scales
 def transform(rows, scaler):
     rows=matrix(rows); means,scales=scaler
-    if len(rows[0]) != len(means): raise ValueError('Dimension mismatch')
+    if len(rows[0]) != len(means) or len(rows[0]) != len(scales):
+        raise ValueError('Dimension mismatch')
     return [[(v-m)/s for v,m,s in zip(r,means,scales)] for r in rows]
 def mse(actual,predicted):
     if not actual or len(actual)!=len(predicted): raise ValueError('Paired values required')

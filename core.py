@@ -27,6 +27,21 @@ def fit_centroids(rows, labels):
     return {label: [_finite_mean(col) for col in zip(*group)]
             for label, group in groups.items()}
 
+def _squared_distances(model, row):
+    try:
+        distances = {label: sum((x-y)**2 for x,y in zip(row,centroid))
+                     for label, centroid in model.items()}
+        if all(math.isfinite(distance) for distance in distances.values()):
+            return distances
+    except OverflowError:
+        pass
+    # Finite coordinates can overflow subtraction, squaring, or summation.
+    # Recompute every candidate from the original values so comparisons and
+    # ties use the same exact arithmetic, without rounding back to floats.
+    exact_row = [Fraction(value) for value in row]
+    return {label: sum((x-Fraction(y))**2 for x,y in zip(exact_row,centroid))
+            for label, centroid in model.items()}
+
 def classify(model, row):
     if not model:
         raise ValueError('Empty model')
@@ -35,7 +50,8 @@ def classify(model, row):
         raise ValueError('Feature dimension mismatch')
     if any(not math.isfinite(value) for centroid in model.values() for value in centroid):
         raise ValueError('Model centroids must be finite')
-    return min(model, key=lambda label: (sum((x-y)**2 for x,y in zip(row,model[label])),label))
+    distances = _squared_distances(model, row)
+    return min(model, key=lambda label: (distances[label],label))
 
 def fit_line(x, y):
     rows = matrix(list(zip(x,y)))

@@ -17,6 +17,8 @@ Run from the repository directory. The demo reads `examples/input.json`; inputs 
 
 The classifier stores one arithmetic centroid per label and resolves distance ties lexically. The regression is univariate ordinary least squares. Fit preprocessing only on training rows; the separate scaler and split helpers make leakage visible. Inputs are hand-written numeric fixtures, not an external dataset. These baselines are not calibrated probabilistic models.
 
+Centroid training accepts finite features. If a coordinate sum overflows, its mean is computed with exact rational arithmetic before conversion back to a float; ordinary finite sums retain their existing floating-point behavior. This prevents an overflowing intermediate sum from creating a nonfinite centroid, but does not guarantee overflow-safe classification distances or regression arithmetic.
+
 ## Layout
 
 - `core.py`: primary algorithm or storage contract.

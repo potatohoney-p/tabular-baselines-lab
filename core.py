@@ -1,4 +1,13 @@
 import math
+from fractions import Fraction
+
+def _finite_mean(values):
+    total = sum(values)
+    if math.isfinite(total):
+        return total / len(values)
+    # Finite inputs can overflow their sum even when their mean is finite.
+    # Use exact arithmetic only on this exceptional path, before division.
+    return float(sum(Fraction(value) for value in values) / len(values))
 
 def matrix(rows):
     rows = [list(map(float, row)) for row in rows]
@@ -15,7 +24,7 @@ def fit_centroids(rows, labels):
     groups = {}
     for row, label in zip(rows, labels):
         groups.setdefault(str(label), []).append(row)
-    return {label: [sum(col) / len(group) for col in zip(*group)]
+    return {label: [_finite_mean(col) for col in zip(*group)]
             for label, group in groups.items()}
 
 def classify(model, row):

@@ -24,6 +24,8 @@ def classify(model, row):
     row = matrix([row])[0]
     if any(len(c) != len(row) for c in model.values()):
         raise ValueError('Feature dimension mismatch')
+    if any(not math.isfinite(value) for centroid in model.values() for value in centroid):
+        raise ValueError('Model centroids must be finite')
     return min(model, key=lambda label: (sum((x-y)**2 for x,y in zip(row,model[label])),label))
 
 def fit_line(x, y):
